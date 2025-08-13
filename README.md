@@ -1,511 +1,241 @@
-README (pasos rápidos)
-
-## Requisitos
-- Node 18+
-- Cuenta en GitHub y Vercel
-
-## 1) Crear proyecto base
-npx create-next-app@latest ofertas-battlezone --typescript --eslint --tailwind --app --src-dir --import-alias "@/*"
-cd ofertas-battlezone
-
-## 2) Reemplaza/añade los archivos de esta plantilla
-Copia el contenido de cada archivo a tu proyecto (mismo path). Si un archivo ya existe, reemplázalo.
-
-## 3) Ejecuta en local
-npm run dev
-
-## 4) Deploy en Vercel
-- Sube el repo a GitHub
-- Entra a vercel.com → Add New → Project → Importa tu repo → Deploy
-
-## 5) Verifica PWA
-- Abre la app y revisa en Chrome → Lighthouse → PWA
-- En móvil, prueba "Añadir a pantalla de inicio"
-
----
-
-# package.json (añade los scripts si faltan)
-```json
-{
-  "name": "ofertas-battlezone",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "14.2.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
-  },
-  "devDependencies": {
-    "@types/node": "20.11.30",
-    "@types/react": "18.2.66",
-    "@types/react-dom": "18.2.22",
-    "autoprefixer": "10.4.19",
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
-    "postcss": "8.4.38",
-    "tailwindcss": "3.4.3",
-    "typescript": "5.4.5"
-  }
-}
-
-
----
-
-tailwind.config.ts
-
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        bz: {
-          purple: '#5D2F91',
-          yellow: '#FFDB00',
-          red: '#C3262F',
-          black: '#101010'
+<!DOCTYPE html><html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Battlezone Ofertas</title>
+  <meta name="description" content="Ofertas curadas de Amazon, AliExpress, Mercado Libre y más. Actualizado al día.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind via CDN (ideal para prototipo). Para prod, usa build propio. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bzPurple: '#5D2F91',
+            bzYellow: '#FFDB00',
+            bzOrange: '#ED7E0B',
+            bzRed: '#C3262F',
+            ink: '#101010'
+          },
+          boxShadow: {
+            soft: '0 10px 25px rgba(0,0,0,0.08)'
+          },
         }
-      },
-      boxShadow: {
-        soft: '0 10px 30px rgba(0,0,0,0.08)'
-      },
-      borderRadius: {
-        xl2: '1.25rem'
       }
-    },
-  },
-  plugins: [],
-}
-export default config
-
-
----
-
-postcss.config.js
-
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-
-
----
-
-src/app/globals.css
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --bz-bg: #0f0f0f;
-  --bz-card: #151515;
-  --bz-text: #ffffff;
-}
-
-html, body {
-  background: var(--bz-bg);
-  color: var(--bz-text);
-}
-
-/* Helpers */
-.container-bz { @apply mx-auto max-w-6xl px-4; }
-.card { @apply bg-[var(--bz-card)] rounded-2xl shadow-soft border border-white/5; }
-.btn { @apply inline-flex items-center justify-center rounded-xl px-4 py-2 font-medium transition; }
-.btn-primary { @apply bg-bz.purple text-white hover:opacity-90; }
-.badge { @apply rounded-full px-3 py-1 text-xs; }
-.badge-hot { @apply bg-red-500/10 text-red-400; }
-.badge-new { @apply bg-white/10 text-white/80; }
-
-
----
-
-src/app/layout.tsx
-
-import type { Metadata } from 'next'
-import './globals.css'
-
-export const metadata: Metadata = {
-  title: 'Ofertas Battlezone',
-  description: 'Ofertas, descuentos y preventas geek para LATAM',
-  manifest: '/manifest.json',
-  themeColor: '#5D2F91',
-  icons: {
-    icon: '/icons/icon-192.png',
-    apple: '/icons/icon-192.png',
-  },
-  openGraph: {
-    title: 'Ofertas Battlezone',
-    description: 'Ofertas, descuentos y preventas geek para LATAM',
-    url: 'https://tu-dominio.com',
-    siteName: 'Ofertas Battlezone',
-    images: [{ url: '/og.jpg', width: 1200, height: 630 }],
-    type: 'website'
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Ofertas Battlezone',
-    description: 'Ofertas, descuentos y preventas geek para LATAM',
-    images: ['/og.jpg']
-  }
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="es">
-      <body>{children}</body>
-    </html>
-  )
-}
-
-
----
-
-src/app/page.tsx
-
-import Link from 'next/link'
-import DealsGrid from '@/components/DealsGrid'
-
-export default function Home() {
-  return (
-    <main>
-      <header className="border-b border-white/10">
-        <div className="container-bz py-6 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">Battlezone <span className="text-bz.yellow">Ofertas</span></Link>
-          <nav className="flex gap-3">
-            <Link href="/publicar" className="btn btn-primary">Publicar oferta</Link>
-          </nav>
-        </div>
-      </header>
-
-      <section className="container-bz py-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="badge badge-new">Nuevo</span>
-          <span className="badge badge-hot">Hot</span>
-        </div>
-        <DealsGrid />
-      </section>
-
-      <footer className="border-t border-white/10">
-        <div className="container-bz py-8 text-sm opacity-70">
-          © {new Date().getFullYear()} Battlezone LATAM — Hecho con ♥ en México
-        </div>
-      </footer>
-    </main>
-  )
-}
-
-
----
-
-src/components/DealCard.tsx
-
-export type Deal = {
-  id: string
-  title: string
-  url: string
-  image: string
-  store: 'amazon' | 'aliexpress' | 'mercadolibre' | 'ebay' | string
-  category: string
-  price_now: number
-  price_list?: number
-  author?: string
-  created_at?: string
-}
-
-export default function DealCard({ deal }: { deal: Deal }) {
-  const pct = deal.price_list ? Math.max(0, Math.round(100 - (deal.price_now * 100) / deal.price_list)) : null
-  return (
-    <a href={deal.url} target="_blank" rel="nofollow sponsored" className="card p-3 hover:shadow-xl transition block">
-      <div className="aspect-[4/3] overflow-hidden rounded-xl mb-3 bg-black/30">
-        <img src={deal.image} alt={deal.title} className="w-full h-full object-cover" />
+    }
+  </script>
+  <style>
+    :root{color-scheme: dark light}
+    body{font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial}
+    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  </style>
+</head>
+<body class="min-h-full bg-neutral-50 text-ink dark:bg-ink dark:text-white">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-ink/90 backdrop-blur shadow-sm">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
+      <div class="h-10 w-10 rounded-2xl bg-bzPurple flex items-center justify-center shadow-soft">
+        <span class="text-white font-extrabold">BZ</span>
       </div>
-      <h3 className="font-semibold line-clamp-2 mb-2">{deal.title}</h3>
-      <div className="flex items-baseline gap-2">
-        <span className="text-xl font-bold">${deal.price_now.toLocaleString()}</span>
-        {deal.price_list && <span className="line-through text-sm opacity-70">${deal.price_list.toLocaleString()}</span>}
-        {pct !== null && <span className="ml-auto badge bg-red-500/10 text-red-400">-{pct}%</span>}
+      <div class="flex-1">
+        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">Battlezone Ofertas</h1>
+        <p class="text-xs text-neutral-500 dark:text-neutral-400">Curadas para LATAM • Enlaces de afiliado</p>
       </div>
-      <div className="mt-2 text-xs opacity-70">{deal.store} • {deal.category}</div>
-    </a>
-  )
-}
-
-
----
-
-src/components/DealsGrid.tsx
-
-import DealCard, { Deal } from './DealCard'
-import { getDeals } from '@/lib/deals'
-
-export default async function DealsGrid() {
-  const deals: Deal[] = await getDeals()
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {deals.map(d => <DealCard key={d.id} deal={d} />)}
+      <a id="submit-deal" href="#" class="hidden sm:inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold bg-bzPurple text-white hover:opacity-90 shadow-soft">
+        <!-- plus icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4"><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+        Sugerir oferta
+      </a>
     </div>
-  )
-}
-
-
----
-
-src/lib/deals.ts (mock; cámbialo por tu DB/API)
-
-import { Deal } from '@/components/DealCard'
-
-export async function getDeals(): Promise<Deal[]> {
-  // Aquí puedes llamar a tu DB (Supabase/Firebase) o a una API.
-  // De momento, devolvemos datos mock.
-  return [
-    {
-      id: '1',
-      title: 'Lego Star Wars X-Wing — 30% OFF',
-      url: 'https://amzn.to/tu-link-afiliado',
-      image: '/demo/demo-1.jpg',
-      store: 'amazon',
-      category: 'Geek Chronicles',
-      price_now: 1299,
-      price_list: 1899,
-      author: 'TheGeekChroniclesBot',
-      created_at: new Date().toISOString(),
+  </header>  <!-- Filters/Search -->  <section class="border-b border-neutral-200/70 dark:border-white/10 bg-white dark:bg-ink">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div class="md:col-span-2 relative">
+        <input id="search" type="search" placeholder="Buscar: Lego, Funko, audífonos…" class="w-full rounded-2xl border border-neutral-300 dark:border-white/10 bg-white/70 dark:bg-neutral-900/60 px-4 py-3 pr-10 outline-none focus:ring-4 focus:ring-bzPurple/20" />
+        <svg class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </div>
+      <select id="storeFilter" class="rounded-2xl border border-neutral-300 dark:border-white/10 bg-white/70 dark:bg-neutral-900/60 px-4 py-3 focus:ring-4 focus:ring-bzPurple/20">
+        <option value="">Todas las tiendas</option>
+        <option>Amazon</option>
+        <option>AliExpress</option>
+        <option>Mercado Libre</option>
+        <option>Otros</option>
+      </select>
+      <select id="sortBy" class="rounded-2xl border border-neutral-300 dark:border-white/10 bg-white/70 dark:bg-neutral-900/60 px-4 py-3 focus:ring-4 focus:ring-bzPurple/20">
+        <option value="new">Más recientes</option>
+        <option value="discount">Mayor descuento</option>
+        <option value="price-asc">Precio: bajo a alto</option>
+        <option value="price-desc">Precio: alto a bajo</option>
+      </select>
+    </div>
+  </section>  <!-- Main grid -->  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+    <div id="empty" class="hidden text-center text-neutral-500 dark:text-neutral-400 py-16">Sin resultados. Ajusta filtros o busca otra palabra.</div>
+  </main>  <!-- Footer -->  <footer class="border-t border-neutral-200/70 dark:border-white/10 py-10 text-sm">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p>&copy; <span id="year"></span> Battlezone LATAM. Algunos enlaces generan comisión (afiliados).</p>
+      <nav class="flex items-center gap-4 text-neutral-500">
+        <a href="#" class="hover:text-bzPurple">Aviso de privacidad</a>
+        <a href="#" class="hover:text-bzPurple">Términos</a>
+        <a href="#" class="hover:text-bzPurple">Contacto</a>
+      </nav>
+    </div>
+  </footer>  <!-- Datos de ejemplo embebidos para que funcione sin backend -->  <script id="offers-data" type="application/json">{
+    "affiliate": {
+      "amazon_tag": "battlezone-20",  
+      "aliexpress_tag": "?aff_fcid=YOUR_CODE",
+      "ml_tag": "?matt_id=YOUR_CODE"
     },
-    {
-      id: '2',
-      title: 'Funko Pop! Harry Potter — Oferta relámpago',
-      url: 'https://amzn.to/tu-link-afiliado',
-      image: '/demo/demo-2.jpg',
-      store: 'amazon',
-      category: 'Coleccionables',
-      price_now: 229,
-      price_list: 349,
-    },
-    {
-      id: '3',
-      title: 'Auriculares Gaming RGB — AliExpress',
-      url: 'https://s.click.aliexpress.com/e/tu-link',
-      image: '/demo/demo-3.jpg',
-      store: 'aliexpress',
-      category: 'Home & Tech',
-      price_now: 399,
-      price_list: 699,
-    },
-  ]
-}
+    "offers": [
+      {
+        "id": "lego-groot",
+        "title": "LEGO Marvel Groot 76217 (476 pzas)",
+        "img": "https://images.unsplash.com/photo-1605649487211-9b231f5a4d58?q=80&w=800&auto=format&fit=crop",
+        "price": 1399.00,
+        "oldPrice": 1999.00,
+        "store": "Amazon",
+        "currency": "MXN",
+        "category": "Juguetes",
+        "url": "https://www.amazon.com.mx/dp/B09QGZ5V7F",
+        "createdAt": "2025-08-12T16:00:00Z"
+      },
+      {
+        "id": "headset-sony",
+        "title": "Audífonos Sony WH-CH520 BT",
+        "img": "https://images.unsplash.com/photo-1518441902110-574a93ff6d57?q=80&w=800&auto=format&fit=crop",
+        "price": 649.00,
+        "oldPrice": 999.00,
+        "store": "Amazon",
+        "currency": "MXN",
+        "category": "Audio",
+        "url": "https://www.amazon.com.mx/dp/B0BXMJ2M6V",
+        "createdAt": "2025-08-13T01:00:00Z"
+      },
+      {
+        "id": "funko-gojo",
+        "title": "Funko Pop! Satoru Gojo (Jujutsu Kaisen)",
+        "img": "https://images.unsplash.com/photo-1612387090619-96c1f0aaae06?q=80&w=800&auto=format&fit=crop",
+        "price": 259.00,
+        "oldPrice": 389.00,
+        "store": "AliExpress",
+        "currency": "MXN",
+        "category": "Coleccionables",
+        "url": "https://www.aliexpress.com/item/1005001234567890.html",
+        "createdAt": "2025-08-10T18:30:00Z"
+      },
+      {
+        "id": "switch-controller",
+        "title": "Control Wireless para Nintendo Switch",
+        "img": "https://images.unsplash.com/photo-1603484477859-abe6a73f9369?q=80&w=800&auto=format&fit=crop",
+        "price": 399.00,
+        "oldPrice": 699.00,
+        "store": "Mercado Libre",
+        "currency": "MXN",
+        "category": "Gaming",
+        "url": "https://articulo.mercadolibre.com.mx/MLM-1234567890",
+        "createdAt": "2025-08-11T12:00:00Z"
+      }
+    ]
+  }</script>  <!-- App JS -->  <script>
+    const $grid = document.getElementById('grid');
+    const $empty = document.getElementById('empty');
+    const $search = document.getElementById('search');
+    const $store = document.getElementById('storeFilter');
+    const $sort = document.getElementById('sortBy');
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-
----
-
-src/app/publicar/page.tsx (formulario simple; envía a /api/deals)
-
-'use client'
-import { useState } from 'react'
-
-export default function Publicar() {
-  const [loading, setLoading] = useState(false)
-  const [ok, setOk] = useState<string | null>(null)
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setLoading(true)
-    setOk(null)
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries())
-    const res = await fetch('/api/deals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    const json = await res.json()
-    setLoading(false)
-    setOk(json.ok ? 'Enviado para revisión' : 'Error al enviar')
-    e.currentTarget.reset()
-  }
-
-  return (
-    <main className="container-bz py-8">
-      <h1 className="text-2xl font-bold mb-4">Publicar oferta</h1>
-      <form onSubmit={onSubmit} className="card p-4 grid gap-3">
-        <input name="title" placeholder="Título" required className="bg-white/5 rounded-xl px-3 py-2" />
-        <input name="url" placeholder="URL de la oferta (afiliado)" required className="bg-white/5 rounded-xl px-3 py-2" />
-        <input name="image" placeholder="URL de imagen" className="bg-white/5 rounded-xl px-3 py-2" />
-        <div className="grid grid-cols-2 gap-3">
-          <input name="price_now" type="number" placeholder="Precio actual" required className="bg-white/5 rounded-xl px-3 py-2" />
-          <input name="price_list" type="number" placeholder="Precio de lista (opcional)" className="bg-white/5 rounded-xl px-3 py-2" />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <input name="store" placeholder="Tienda (amazon/aliexpress/ml)" className="bg-white/5 rounded-xl px-3 py-2" />
-          <input name="category" placeholder="Categoría" className="bg-white/5 rounded-xl px-3 py-2" />
-        </div>
-        <button className="btn btn-primary" disabled={loading}>{loading ? 'Enviando…' : 'Enviar'}</button>
-        {ok && <p className="text-sm opacity-80">{ok}</p>}
-      </form>
-    </main>
-  )
-}
-
-
----
-
-src/app/api/deals/route.ts (endpoint demo)
-
-import { NextResponse } from 'next/server'
-
-export async function POST(req: Request) {
-  const body = await req.json()
-  // TODO: Validar y guardar en DB; por ahora respondemos OK
-  console.log('DEAL NUEVA', body)
-  return NextResponse.json({ ok: true })
-}
-
-
----
-
-public/manifest.json (PWA)
-
-{
-  "name": "Ofertas Battlezone",
-  "short_name": "BZ Ofertas",
-  "start_url": "/?source=pwa",
-  "scope": "/",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#5D2F91",
-  "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
-}
-
-
----
-
-public/sw.js (Service Worker simple)
-
-const CACHE = 'bz-v1'
-const ASSETS = [
-  '/',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
-]
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)))
-})
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-  )
-})
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/')))
-  )
-})
-
-
----
-
-src/app/register-sw.tsx (registra el SW)
-
-'use client'
-import { useEffect } from 'react'
-
-export default function RegisterSW() {
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-      })
+    /** Helpers **/
+    const fmtMoney = (v, c='MXN') => new Intl.NumberFormat('es-MX', { style:'currency', currency:c, maximumFractionDigits:0 }).format(v);
+    const discountPct = (price, oldPrice) => oldPrice && price < oldPrice ? Math.round((1 - (price/oldPrice))*100) : 0;
+    const relativeDate = (iso) => {
+      const rtf = new Intl.RelativeTimeFormat('es', {numeric:'auto'});
+      const d = new Date(iso); const now = new Date();
+      const diff = Math.floor((d - now)/ (1000*60*60));
+      const units = [ ['year',24*365], ['month',24*30], ['week',24*7], ['day',24], ['hour',1] ];
+      for(const [unit, size] of units){
+        const v = Math.round(diff/size); if(Math.abs(v) >=1) return rtf.format(v, unit);
+      }
+      return 'hoy';
     }
-  }, [])
-  return null
-}
 
+    /** Carga data embebida **/
+    const raw = document.getElementById('offers-data').textContent;
+    const data = JSON.parse(raw);
+    const AFF = data.affiliate || {};
 
----
-
-src/app/(providers)/layout.tsx (inyecta el registro del SW en la home si quieres)
-
-import RegisterSW from '../register-sw'
-
-export default function ProvidersLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <RegisterSW />
-      {children}
-    </>
-  )
-}
-
-
----
-
-public/robots.txt
-
-User-agent: *
-Allow: /
-Sitemap: https://tu-dominio.com/sitemap.xml
-
-
----
-
-next-sitemap.config.js (opcional si instalas next-sitemap)
-
-/** @type {import('next-sitemap').IConfig} */
-module.exports = {
-  siteUrl: 'https://tu-dominio.com',
-  generateRobotsTxt: true,
-}
-
-
----
-
-vercel.json (headers y ejemplo de redirect)
-
-{
-  "headers": [
-    {
-      "source": "(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    },
-    {
-      "source": "/(.*)\.(jpg|jpeg|png|webp|svg)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
+    function withAffiliate(url, store){
+      try {
+        const u = new URL(url);
+        if(store === 'Amazon' && AFF.amazon_tag){ u.searchParams.set('tag', AFF.amazon_tag); }
+        if(store === 'AliExpress' && AFF.aliexpress_tag){
+          // Mantén parámetros existentes y añade tu código
+          const extra = new URLSearchParams(AFF.aliexpress_tag.replace(/^\?/, ''));
+          for (const [k,v] of extra) u.searchParams.set(k,v);
+        }
+        if(store === 'Mercado Libre' && AFF.ml_tag){
+          const extra = new URLSearchParams(AFF.ml_tag.replace(/^\?/, ''));
+          for (const [k,v] of extra) u.searchParams.set(k,v);
+        }
+        return u.toString();
+      } catch { return url }
     }
-  ],
-  "redirects": [
-    { "source": "/ofertas", "destination": "/", "permanent": true }
-  ]
-}
 
+    function storeBadge(store){
+      const map = {Amazon:'bg-[#232F3E]', AliExpress:'bg-[#FF4747]', 'Mercado Libre':'bg-[#FFE600] text-ink', Otros:'bg-neutral-700'};
+      return map[store] || 'bg-neutral-700';
+    }
 
----
+    function card(o){
+      const pct = discountPct(o.price, o.oldPrice);
+      return `
+        <article class="group rounded-2xl border border-neutral-200/70 dark:border-white/10 bg-white dark:bg-neutral-900 overflow-hidden shadow-soft flex flex-col">
+          <div class="relative aspect-[4/3] overflow-hidden">
+            <img loading="lazy" src="${o.img}" alt="${o.title}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"/>
+            ${pct>0?`<div class="absolute left-3 top-3 rounded-xl bg-bzRed text-white px-2 py-1 text-xs font-bold shadow-soft">-${pct}%</div>`:''}
+            <div class="absolute right-3 top-3 rounded-xl px-2 py-1 text-xs font-bold shadow-soft ${storeBadge(o.store)} text-white">${o.store}</div>
+          </div>
+          <div class="p-4 flex-1 flex flex-col gap-3">
+            <h3 class="font-bold text-sm line-clamp-2">${o.title}</h3>
+            <div class="flex items-baseline gap-2">
+              <span class="text-lg font-extrabold text-bzPurple">${fmtMoney(o.price, o.currency)}</span>
+              ${o.oldPrice?`<span class="text-xs line-through text-neutral-400">${fmtMoney(o.oldPrice, o.currency)}</span>`:''}
+            </div>
+            <div class="mt-auto flex items-center justify-between">
+              <span class="text-xs text-neutral-500">${relativeDate(o.createdAt)}</span>
+              <a target="_blank" rel="nofollow sponsored noopener" href="${withAffiliate(o.url, o.store)}" class="inline-flex items-center gap-2 rounded-xl bg-bzYellow text-ink font-semibold text-sm px-3 py-2 hover:opacity-90">
+                Ver oferta
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4"><path fill="currentColor" d="M13 5.828V15h-2V5.828L7.414 9.414 6 8l6-6 6 6-1.414 1.414zM5 18h14v2H5z"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>`
+    }
 
-Notas finales
+    function applyFilters(list){
+      const q = ($search.value||'').toLowerCase().trim();
+      const s = $store.value;
+      let out = list.filter(o => (!s || o.store===s) && (!q || o.title.toLowerCase().includes(q)));
+      switch($sort.value){
+        case 'discount': out.sort((a,b)=> (discountPct(b.price,b.oldPrice) - discountPct(a.price,a.oldPrice))); break;
+        case 'price-asc': out.sort((a,b)=> a.price - b.price); break;
+        case 'price-desc': out.sort((a,b)=> b.price - a.price); break;
+        default: out.sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+      }
+      return out;
+    }
 
-- Reemplaza /demo/*.jpg por tus imágenes reales.
-- Agrega /public/icons/icon-192.png e icon-512.png (puedes generarlas en realfavicongenerator.net).
-- Para datos reales, conecta una DB (Supabase) y sustituye src/lib/deals.ts por consultas.
-- Añade rel="nofollow sponsored" a links de afiliado (ya está en DealCard).
-- Estilos y colores alineados a tu paleta (#5D2F91, #FFDB00, #C3262F, #101010).
+    function render(){
+      const list = applyFilters(data.offers||[]);
+      $grid.innerHTML = list.map(card).join('');
+      $empty.classList.toggle('hidden', list.length>0);
+    }
 
+    $search.addEventListener('input',()=>{render()});
+    $store.addEventListener('change',()=>{render()});
+    $sort.addEventListener('change',()=>{render()});
 
+    render();
+  </script></body>
+</html>
